@@ -1,1 +1,2 @@
 dbt-postgres==1.7.6
+prefect==2.14.9
