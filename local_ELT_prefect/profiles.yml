@@ -1,0 +1,13 @@
+postgres:
+  outputs:
+    prod:
+        type: postgres
+        threads: 4
+        host: postgres-green-con
+        port: 5432
+        user: postgres
+        pass: green
+        dbname: ny-green-taxi-DB
+        schema: prd
+
+  target: prod

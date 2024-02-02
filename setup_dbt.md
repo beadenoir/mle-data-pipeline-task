@@ -1,7 +1,7 @@
 # SETUP DBT PROJECT
 ## Setup a virtual environment and install dbt with postgres adapter
 ### Environment 
-```bash
+```sh
 pyenv local 3.11.3
 python -m venv .venv
 source .venv/bin/activate
@@ -10,7 +10,7 @@ pip install dbt-postgres
 ```
 
 ### or Miniconda Environment 
-```bash
+```sh
 conda create -n .10venv python=3.11.3 pip
 conda activate .10venv
 pip install dbt-postgres
@@ -96,7 +96,7 @@ sources:
   - name: src_gtaxi
     schema: public
     tables:
-      - name: gtaxi_2021_qt1
+      - name: green_taxi_2021_qt1
 ```
 
 + `stg_gtaxi.sql` 
@@ -126,7 +126,7 @@ SELECT
     trip_type,
     congestion_surcharge
 
-FROM {{ source('src_gtaxi','gtaxi_2021_qt1') }}
+FROM {{ source('src_gtaxi','grenn_taxi_2021_qt1') }}
 ```
 
 

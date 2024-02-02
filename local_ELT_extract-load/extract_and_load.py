@@ -26,7 +26,7 @@ def load(df:pd.DataFrame, postgres_DB:str, table_name:str):
 
 if __name__ == "__main__": 
     df_green_taxi = extract()
-    postgres_DB = 'postgresql://postgres:green@172.21.0.2:5432/ny-green-taxi-DB'
-    table_name = 'gtaxi_2021_qt1'
+    postgres_DB = 'postgresql://postgres:green@postgres-green-con:5432/ny-green-taxi-DB'
+    table_name = 'green_taxi_2021_qt1'
     load(df_green_taxi, postgres_DB, table_name) 
     

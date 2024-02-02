@@ -1,6 +1,6 @@
 # SETUP THE DATABASE
 
-## setup docker container for database
+## Setup a docker network and container for the database
 ```sh
 docker network create green-taxi-nw
 ```
@@ -11,28 +11,16 @@ docker run -d --name postgres-green-con \
     -e POSTGRES_PASSWORD=green \
     -e POSTGRES_DB=ny-green-taxi-DB \
     -p 5432:5432 \
+    -v ./db-data:/var/lib/postgresql/data \
     postgres:13.2
 ```
-    -v $(pwd)/db-data:/var/lib/postgresql/data \
-```sh
-docker ps
-```
-```sh
-docker network connect green-taxi-nw <CONTAINER_ID>
-```
-```sh
-docker exec -it postgres-green-con psql -U postgres 
-```
-```sh
-docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}" <CONTAINER_ID>
-```
 
-## write files for extract and load steps
+## Created python files and a Dockercontainer for extract and load steps
 
-### new folder for extract and load task
+### added new folders for extract and load task
 ```sh
-mkdir -p local-ELT_extract-load/data
-cd local-ELT_extract-load
+mkdir -p local_ELT_extract-load/data
+cd local_ELT_extract-load
 ```
 
 + ``extract_and_load.py``
@@ -60,13 +48,12 @@ def load(df:pd.DataFrame, postgres_DB:str, table_name:str):
                  batch_df = batch.to_pandas()
                  batch_df.to_sql(name=table_name, con=engine, if_exists='append', index=False)
         print('all months processed!')
-
-        
+  
 
 if __name__ == "__main__": 
     df_green_taxi = extract()
-    postgres_DB = 'postgresql://postgres:green@172.21.0.2:5432/ny-green-taxi-DB'
-    table_name = 'rides_jan-feb-mar'
+    postgres_DB = 'postgresql://postgres:green@postgres-green-con:5432/ny-green-taxi-DB'
+    table_name = 'green_taxi_2021_qt1'
     load(df_green_taxi, postgres_DB, table_name) 
 ```
 + ``Dockerfile``
@@ -93,42 +80,35 @@ sqlalchemy
 psycopg2-binary
 ```
 
-build docker image
-```sh 
-cd local-ELT_extract-load
-```
-
+### built docker image
 ```sh
 docker build -t extract_and_load .
 ```
 
-fill database with data:
+### filled the database with data:
 ```sh
 docker run --rm -it --network=green-taxi-nw extract_and_load
 ```
-
+## Connected to the database
+```sh
+docker exec -it postgres-green-con psql -U postgres 
+```
 postgres=#
 ```sh
 \c ny-green-taxi-DB
 ```
-
 ny-green-taxi-DB=#
+
+### checked for loaded data
 ```sh
 \dt
 ```
-=> rides_jan-feb-mar
+&rarr; green_taxi_2021_qt1
 
 ny-green-taxi-DB=#
+
 ```sh
-SELECT COUNT(*) FROM gtaxi_2021_qt1;
+SELECT COUNT(*) FROM green_taxi_2021_qt1;
 ```
 
-=> 224917 rows
-
- 0.0.0.0:5432->5432/tcp 
-
- sudo rm -r db-data
-
- POSTGRES_HOST_AUTH_METHOD=trust
-
- rides_jan_feb_mar
+&rarr; 224917 rows
